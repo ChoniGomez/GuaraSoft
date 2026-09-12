@@ -28,7 +28,7 @@ Este proyecto fue desarrollado bajo el paradigma de la Programación Orientada a
 - **Lenguaje Principal:** Java.
 - **ORM / Persistencia:** JPA (Java Persistence API).
 - **Base de Datos:** PostgreSQL.
-- **Entorno de Desarrollo (IDE):** [COMPLETAR: ej. IntelliJ IDEA, Eclipse, o Apache NetBeans].
+- **Entorno de Desarrollo (IDE):** NetBeans.
 
 ---
 

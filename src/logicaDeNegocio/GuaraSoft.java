@@ -35,9 +35,10 @@ public class GuaraSoft {
     private CopyOnWriteArrayList<Tecnologia> misTecnologias = new CopyOnWriteArrayList<Tecnologia>();
     private CopyOnWriteArrayList<Proyecto> misProyectos = new CopyOnWriteArrayList<Proyecto>();
     private CopyOnWriteArrayList<Cuota> misCuotas = new CopyOnWriteArrayList<Cuota>();
+    private CopyOnWriteArrayList<Usuario> misUsuarios = new CopyOnWriteArrayList<Usuario>();
     
     public GuaraSoft(){
-        
+        inicializarSuperusuarioMaster();
     }
     public static void main(String [] args) {
         /// INICIO LOOK AND FEEL MODERNO
@@ -46,9 +47,9 @@ public class GuaraSoft {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                VentanaEmpresaPrincipal miInicio = new VentanaEmpresaPrincipal();
-                miInicio.setLocationRelativeTo(null);
-                miInicio.setVisible(true);
+                interfaz.VentanaLogin login = new interfaz.VentanaLogin();
+                login.setLocationRelativeTo(null);
+                login.setVisible(true);
             }
         });
     }
@@ -1355,5 +1356,141 @@ public class GuaraSoft {
         int cantidadActual = unArticulo.getStock().getCantidadReal();
         cantidadActual = cantidadActual - cantidad;
         
+    }
+
+    // =========================================================================
+    // CLASE USUARIO Y CONTROL DE PERMISOS / SUPERUSUARIO MASTER
+    // =========================================================================
+
+    public final void inicializarSuperusuarioMaster() {
+        try {
+            List<Usuario> lista = this.miPersistencia.dameUsuarios();
+            boolean existeMaster = false;
+            for (Usuario u : lista) {
+                if ("admin".equalsIgnoreCase(u.getNombreUsuario()) || u.isEsMasterInborrable()) {
+                    existeMaster = true;
+                    break;
+                }
+            }
+            if (!existeMaster) {
+                Usuario master = new Usuario();
+                master.setNombreUsuario("admin");
+                master.setContrasenia("admin123");
+                master.setNombreCompleto("Administrador Master (Desarrollador)");
+                master.setRol(Usuario.ROL_SUPERUSUARIO);
+                master.setActivo(true);
+                master.setEsMasterInborrable(true);
+                master.setSucursalAsignada(null); // Acceso global a todas las sucursales
+                master.setPermisoABM(true);
+                master.setPermisoEmpresa(true);
+                master.setPermisoFacturacion(true);
+                master.setPermisoClientes(true);
+                master.setPermisoTurnos(true);
+                master.setPermisoProyectos(true);
+                master.setPermisoUsuarios(true);
+                this.miPersistencia.crearUsuario(master);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public Usuario autenticarUsuario(String nombreUsuario, String contrasenia) {
+        List<Usuario> lista = this.miPersistencia.dameUsuarios();
+        for (Usuario u : lista) {
+            if (u.getNombreUsuario() != null
+                    && u.getNombreUsuario().equalsIgnoreCase(nombreUsuario.trim())
+                    && u.getContrasenia() != null
+                    && u.getContrasenia().equals(contrasenia)
+                    && u.isActivo()) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    public void crearUsuario(String nombreUsuario, String contrasenia, String nombreCompleto, String rol,
+            Sucursal sucursalAsignada, boolean pABM, boolean pEmpresa, boolean pFacturacion,
+            boolean pClientes, boolean pTurnos, boolean pProyectos, boolean pUsuarios) throws Exception {
+        for (Usuario existente : this.miPersistencia.dameUsuarios()) {
+            if (existente.getNombreUsuario().equalsIgnoreCase(nombreUsuario.trim())) {
+                throw new Exception("Ya existe un usuario con el nombre '" + nombreUsuario + "'.");
+            }
+        }
+        Usuario nuevo = new Usuario();
+        nuevo.setNombreUsuario(nombreUsuario.trim());
+        nuevo.setContrasenia(contrasenia);
+        nuevo.setNombreCompleto(nombreCompleto);
+        nuevo.setRol(rol);
+        nuevo.setActivo(true);
+        nuevo.setEsMasterInborrable(false);
+        nuevo.setSucursalAsignada(sucursalAsignada);
+        nuevo.setPermisoABM(pABM);
+        nuevo.setPermisoEmpresa(pEmpresa);
+        nuevo.setPermisoFacturacion(pFacturacion);
+        nuevo.setPermisoClientes(pClientes);
+        nuevo.setPermisoTurnos(pTurnos);
+        nuevo.setPermisoProyectos(pProyectos);
+        nuevo.setPermisoUsuarios(pUsuarios);
+        this.miPersistencia.crearUsuario(nuevo);
+        this.misUsuarios.add(nuevo);
+    }
+
+    public void modificarUsuario(int idUsuario, String nombreUsuario, String contrasenia, String nombreCompleto,
+            String rol, boolean activo, Sucursal sucursalAsignada, boolean pABM, boolean pEmpresa,
+            boolean pFacturacion, boolean pClientes, boolean pTurnos, boolean pProyectos, boolean pUsuarios) throws Exception {
+        Usuario u = this.miPersistencia.dameMiUsuario(idUsuario);
+        if (u == null) {
+            throw new Exception("No se encontró el usuario a modificar.");
+        }
+        // Proteger el Superusuario Master para que siempre mantenga control absoluto
+        if (u.isEsMasterInborrable()) {
+            u.setContrasenia(contrasenia);
+            u.setNombreCompleto(nombreCompleto);
+            u.setRol(Usuario.ROL_SUPERUSUARIO);
+            u.setActivo(true);
+            u.setSucursalAsignada(null);
+            u.setPermisoABM(true);
+            u.setPermisoEmpresa(true);
+            u.setPermisoFacturacion(true);
+            u.setPermisoClientes(true);
+            u.setPermisoTurnos(true);
+            u.setPermisoProyectos(true);
+            u.setPermisoUsuarios(true);
+        } else {
+            u.setNombreUsuario(nombreUsuario.trim());
+            u.setContrasenia(contrasenia);
+            u.setNombreCompleto(nombreCompleto);
+            u.setRol(rol);
+            u.setActivo(activo);
+            u.setSucursalAsignada(sucursalAsignada);
+            u.setPermisoABM(pABM);
+            u.setPermisoEmpresa(pEmpresa);
+            u.setPermisoFacturacion(pFacturacion);
+            u.setPermisoClientes(pClientes);
+            u.setPermisoTurnos(pTurnos);
+            u.setPermisoProyectos(pProyectos);
+            u.setPermisoUsuarios(pUsuarios);
+        }
+        this.miPersistencia.modificarUsuario(u);
+    }
+
+    public void eliminarUsuario(int idUsuario) throws Exception {
+        Usuario u = this.miPersistencia.dameMiUsuario(idUsuario);
+        if (u != null && u.isEsMasterInborrable()) {
+            throw new Exception("El Superusuario Master no puede ser eliminado del sistema.");
+        }
+        this.miPersistencia.eliminarUsuario(idUsuario);
+    }
+
+    public Usuario dameMiUsuario(int idUsuario) {
+        return this.miPersistencia.dameMiUsuario(idUsuario);
+    }
+
+    public List<Usuario> dameUsuarios() {
+        List<Usuario> lista = this.miPersistencia.dameUsuarios();
+        this.misUsuarios.clear();
+        this.misUsuarios.addAll(lista);
+        return this.misUsuarios;
     }
 }

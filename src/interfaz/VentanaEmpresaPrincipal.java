@@ -32,6 +32,7 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
     private VentanaCuentaCorriente miVentanaCuentaCorriente = null;
     private VentanaTecnologia miVentanaTecnologia = null;
     private VentanaCuota miVentanaCuota = null;
+    private VentanaUsuarios miVentanaUsuarios = null;
     
     /**
      * Creates new form VentanaEmpresaPrincipal
@@ -626,8 +627,67 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
         jMenuItem15.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_HOLDING_USD, 14, colorIcono));
         jMenuItem16.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CODE, 14, colorIcono));
 
-        // Botón en la derecha de la barra de menú para cambiar entre Modo Oscuro / Claro
+        // Opción Cerrar Sesión en menú Archivo
+        javax.swing.JMenuItem jMenuCerrarSesion = new javax.swing.JMenuItem("Cerrar Sesión");
+        jMenuCerrarSesion.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER_LOCK, 14, new java.awt.Color(241, 196, 15)));
+        jMenuCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                logicaDeNegocio.SesionUsuario.getInstancia().cerrarSesion();
+                VentanaLogin login = new VentanaLogin();
+                login.setLocationRelativeTo(null);
+                login.setVisible(true);
+                VentanaEmpresaPrincipal.this.dispose();
+            }
+        });
+        jMenu1.insert(jMenuCerrarSesion, 0);
+        jMenu1.insertSeparator(1);
+
+        // Menú de Seguridad / Administración de Usuarios (solo con permiso o Superusuario)
+        javax.swing.JMenu jMenuSeguridad = new javax.swing.JMenu("Seguridad");
+        jMenuSeguridad.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER_SHIELD, 14, new java.awt.Color(46, 204, 113)));
+        javax.swing.JMenuItem jMenuItemUsuarios = new javax.swing.JMenuItem("Gestión de Usuarios y Permisos");
+        jMenuItemUsuarios.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USERS_COG, 14, colorIcono));
+        jMenuItemUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                abrirVentanaUsuarios();
+            }
+        });
+        jMenuSeguridad.add(jMenuItemUsuarios);
+        jMenuBar1.add(jMenuSeguridad);
+
+        // Aplicar control de permisos según el usuario logueado
+        logicaDeNegocio.Usuario usuarioActual = logicaDeNegocio.SesionUsuario.getInstancia().getUsuarioActual();
+        if (usuarioActual != null) {
+            jMenuABM.setVisible(usuarioActual.isPermisoABM());
+            jMenu2.setVisible(usuarioActual.isPermisoEmpresa());
+            jMenu3.setVisible(usuarioActual.isPermisoFacturacion());
+            jMenu4.setVisible(usuarioActual.isPermisoClientes());
+            jMenu5.setVisible(usuarioActual.isPermisoTurnos());
+            jMenu6.setVisible(usuarioActual.isPermisoProyectos());
+            jMenuSeguridad.setVisible(usuarioActual.isPermisoUsuarios());
+
+            // Si tiene sucursal específica asignada (no global), ocultar ABM de Sucursales
+            if (!usuarioActual.esSuperusuario() && usuarioActual.getSucursalAsignada() != null) {
+                jMenuItemSucursal.setVisible(false);
+                jMenuItem4.setVisible(false);
+            }
+        }
+
+        // Mostrar indicador del usuario y sucursal activa en la barra superior
         jMenuBar1.add(javax.swing.Box.createHorizontalGlue());
+        if (usuarioActual != null) {
+            String sucInfo = usuarioActual.getSucursalAsignada() != null
+                    ? "Sucursal N° " + usuarioActual.getSucursalAsignada().getNumeroSucursal()
+                    : "Todas las Sucursales";
+            javax.swing.JLabel lblSesion = new javax.swing.JLabel(
+                    "  " + usuarioActual.getNombreUsuario() + " [" + usuarioActual.getRol() + " - " + sucInfo + "]  "
+            );
+            lblSesion.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid. ID_BADGE, 14, new java.awt.Color(46, 204, 113)));
+            jMenuBar1.add(lblSesion);
+        }
+
         final javax.swing.JButton btnTema = new javax.swing.JButton("Modo Claro / Oscuro");
         btnTema.setFocusable(false);
         btnTema.putClientProperty("JButton.buttonType", "toolBarButton");
@@ -647,11 +707,30 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
                 if (e.getChild() instanceof java.awt.Container) {
                     EstiloModerno.aplicarEstiloVentana((java.awt.Container) e.getChild());
                     if (e.getChild() instanceof javax.swing.JInternalFrame) {
-                        ((javax.swing.JInternalFrame) e.getChild()).pack();
+                        javax.swing.JInternalFrame internal = (javax.swing.JInternalFrame) e.getChild();
+                        internal.pack();
+                        Dimension desktopSize = jDesktopPane.getSize();
+                        Dimension frameSize = internal.getSize();
+                        if (desktopSize.width > 0 && desktopSize.height > 0) {
+                            internal.setLocation(
+                                    Math.max(0, (desktopSize.width - frameSize.width) / 2),
+                                    Math.max(0, (desktopSize.height - frameSize.height) / 2)
+                            );
+                        }
                     }
                 }
             }
         });
+    }
+
+    private void abrirVentanaUsuarios() {
+        if (this.miVentanaUsuarios == null || this.miVentanaUsuarios.isClosed()) {
+            this.miVentanaUsuarios = new VentanaUsuarios(this.miControladoraInterfaz);
+            jDesktopPane.add(this.miVentanaUsuarios);
+            this.miVentanaUsuarios.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "LA VENTANA DE USUARIOS YA ESTÁ ABIERTA.", "ADVERTENCIA", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

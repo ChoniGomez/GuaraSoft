@@ -25,6 +25,7 @@ import logicaDeNegocio.Sucursal;
 import logicaDeNegocio.Tecnologia;
 import logicaDeNegocio.Tique;
 import logicaDeNegocio.Turno;
+import logicaDeNegocio.Usuario;
 import persistenciaJPA.exceptions.NonexistentEntityException;
 import persistenciaJPA.exceptions.PreexistingEntityException;
 
@@ -51,6 +52,7 @@ public class ControladoraPersistencia {
     TecnologiaJpaController miTecnologiaJpa = new TecnologiaJpaController();
     ProyectoJpaController miProyectoJpa = new ProyectoJpaController();
     CuotaJpaController miCuotaJpa = new CuotaJpaController();
+    UsuarioJpaController miUsuarioJpa = new UsuarioJpaController();
     
     public ControladoraPersistencia() {
     }
@@ -429,5 +431,26 @@ public class ControladoraPersistencia {
     // DAME TODOS
     public List<Cuota> dameCuotas() throws PreexistingEntityException{
         return this.miCuotaJpa.findCuotaEntities();
+    }
+
+    // CLASE USUARIO
+    public void crearUsuario(Usuario unUsuario) throws Exception {
+        this.miUsuarioJpa.create(unUsuario);
+    }
+
+    public void modificarUsuario(Usuario unUsuario) throws Exception {
+        this.miUsuarioJpa.edit(unUsuario);
+    }
+
+    public void eliminarUsuario(int id) throws NonexistentEntityException {
+        this.miUsuarioJpa.destroy(id);
+    }
+
+    public Usuario dameMiUsuario(int id) {
+        return this.miUsuarioJpa.findUsuario(id);
+    }
+
+    public List<Usuario> dameUsuarios() {
+        return this.miUsuarioJpa.findUsuarioEntities();
     }
 }

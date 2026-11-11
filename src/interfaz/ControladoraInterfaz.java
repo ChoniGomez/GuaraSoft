@@ -22,6 +22,7 @@ import logicaDeNegocio.Proyecto;
 import logicaDeNegocio.Sucursal;
 import logicaDeNegocio.Tecnologia;
 import logicaDeNegocio.Tique;
+import logicaDeNegocio.Usuario;
 import persistenciaJPA.exceptions.NonexistentEntityException;
 import persistenciaJPA.exceptions.PreexistingEntityException;
 
@@ -267,5 +268,36 @@ public class ControladoraInterfaz {
     
     public void eliminarFacturaVenta(int id) throws PreexistingEntityException, NonexistentEntityException, Exception{
         this.miControladoraLogicaDeNegocio.eliminarFacturaVenta(id);
+    }
+
+    // CLASE USUARIO Y PERMISOS
+    public Usuario autenticarUsuario(String nombreUsuario, String contrasenia) {
+        return this.miControladoraLogicaDeNegocio.autenticarUsuario(nombreUsuario, contrasenia);
+    }
+
+    public void crearUsuario(String nombreUsuario, String contrasenia, String nombreCompleto, String rol,
+            Sucursal sucursalAsignada, boolean pABM, boolean pEmpresa, boolean pFacturacion,
+            boolean pClientes, boolean pTurnos, boolean pProyectos, boolean pUsuarios) throws Exception {
+        this.miControladoraLogicaDeNegocio.crearUsuario(nombreUsuario, contrasenia, nombreCompleto, rol,
+                sucursalAsignada, pABM, pEmpresa, pFacturacion, pClientes, pTurnos, pProyectos, pUsuarios);
+    }
+
+    public void modificarUsuario(int idUsuario, String nombreUsuario, String contrasenia, String nombreCompleto,
+            String rol, boolean activo, Sucursal sucursalAsignada, boolean pABM, boolean pEmpresa,
+            boolean pFacturacion, boolean pClientes, boolean pTurnos, boolean pProyectos, boolean pUsuarios) throws Exception {
+        this.miControladoraLogicaDeNegocio.modificarUsuario(idUsuario, nombreUsuario, contrasenia, nombreCompleto,
+                rol, activo, sucursalAsignada, pABM, pEmpresa, pFacturacion, pClientes, pTurnos, pProyectos, pUsuarios);
+    }
+
+    public void eliminarUsuario(int idUsuario) throws Exception {
+        this.miControladoraLogicaDeNegocio.eliminarUsuario(idUsuario);
+    }
+
+    public Usuario dameMiUsuario(int idUsuario) {
+        return this.miControladoraLogicaDeNegocio.dameMiUsuario(idUsuario);
+    }
+
+    public List<Usuario> dameUsuarios() {
+        return this.miControladoraLogicaDeNegocio.dameUsuarios();
     }
 }

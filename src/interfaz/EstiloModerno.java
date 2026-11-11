@@ -12,11 +12,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JInternalFrame;
+import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.swing.FontIcon;
 
@@ -37,6 +39,9 @@ public class EstiloModerno {
             UIManager.put("Table.intercellSpacing", new Dimension(0, 1));
             UIManager.put("Table.selectionArc", 8);
             UIManager.put("TitlePane.unifiedBackground", true);
+            // Asegurar diseño estándar de los botones de JInternalFrame en la esquina superior derecha
+            UIManager.put("InternalFrame.buttonSize", new Dimension(24, 24));
+            UIManager.put("InternalFrameTitlePane.buttonSpacing", 2);
 
             if (modoOscuro) {
                 FlatDarkLaf.setup();
@@ -61,13 +66,31 @@ public class EstiloModerno {
     public static void aplicarEstiloVentana(Container contenedor) {
         if (contenedor instanceof JInternalFrame) {
             JInternalFrame frame = (JInternalFrame) contenedor;
+            frame.setClosable(true);
+            frame.setIconifiable(true);
+            frame.setMaximizable(true);
+            frame.setResizable(true);
             frame.putClientProperty("JInternalFrame.isPalette", false);
+            // Solo estilizar el ContentPane para NO alterar los controles de minimizar/maximizar/cerrar del marco
+            aplicarEstiloComponentes(frame.getContentPane());
+            return;
+        }
+        aplicarEstiloComponentes(contenedor);
+    }
+
+    private static void aplicarEstiloComponentes(Container contenedor) {
+        if (contenedor instanceof BasicInternalFrameTitlePane) {
+            return;
         }
 
         for (Component comp : contenedor.getComponents()) {
+            if (comp instanceof BasicInternalFrameTitlePane) {
+                continue;
+            }
+
             if (comp instanceof JButton) {
                 estilizarBoton((JButton) comp);
-            } else if (comp instanceof JTextField) {
+            } else if (comp instanceof JTextField || comp instanceof JPasswordField) {
                 JTextField txt = (JTextField) comp;
                 txt.setPreferredSize(new Dimension(Math.max(txt.getPreferredSize().width, 160), 30));
                 txt.putClientProperty("JTextField.showClearButton", true);
@@ -95,13 +118,16 @@ public class EstiloModerno {
             }
 
             if (comp instanceof Container) {
-                aplicarEstiloVentana((Container) comp);
+                aplicarEstiloComponentes((Container) comp);
             }
         }
     }
 
     private static void estilizarBoton(JButton btn) {
         String texto = btn.getText() != null ? btn.getText().trim().toLowerCase() : "";
+        if (texto.isEmpty()) {
+            return;
+        }
         btn.setIconTextGap(8);
         btn.setFont(btn.getFont().deriveFont(Font.BOLD, 12f));
         btn.setPreferredSize(new Dimension(Math.max(btn.getPreferredSize().width + 24, 115), 34));
@@ -112,10 +138,10 @@ public class EstiloModerno {
             btn.setIcon(FontIcon.of(FontAwesomeSolid.EDIT, 14, new Color(52, 152, 219)));
         } else if (texto.contains("eliminar") || texto.contains("borrar") || texto.contains("quitar") || texto.equals("-")) {
             btn.setIcon(FontIcon.of(FontAwesomeSolid.TRASH_ALT, 14, new Color(231, 76, 60)));
-        } else if (texto.contains("aceptar") || texto.contains("guardar")) {
+        } else if (texto.contains("aceptar") || texto.contains("guardar") || texto.contains("ingresar")) {
             btn.setIcon(FontIcon.of(FontAwesomeSolid.CHECK, 14, new Color(46, 204, 113)));
             btn.putClientProperty("JButton.buttonType", "roundRect");
-        } else if (texto.contains("cancelar")) {
+        } else if (texto.contains("cancelar") || texto.contains("salir")) {
             btn.setIcon(FontIcon.of(FontAwesomeSolid.TIMES, 14, new Color(231, 76, 60)));
         } else if (texto.contains("buscar")) {
             btn.setIcon(FontIcon.of(FontAwesomeSolid.SEARCH, 14, new Color(155, 89, 182)));

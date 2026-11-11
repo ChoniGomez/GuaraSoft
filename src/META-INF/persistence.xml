@@ -24,6 +24,7 @@
     <class>logicaDeNegocio.Tecnologia</class>
     <class>logicaDeNegocio.Tique</class>
     <class>logicaDeNegocio.Turno</class>
+    <class>logicaDeNegocio.Usuario</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/GuaraSoft"/>
       <property name="javax.persistence.jdbc.user" value="postgres"/>

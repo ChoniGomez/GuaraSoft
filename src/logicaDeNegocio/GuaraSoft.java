@@ -40,11 +40,17 @@ public class GuaraSoft {
         
     }
     public static void main(String [] args) {
-        /// INICIO
-        VentanaEmpresaPrincipal miInicio = new VentanaEmpresaPrincipal();
-        miInicio.setLocationRelativeTo(null);
-        miInicio.setVisible(true);  
-        
+        /// INICIO LOOK AND FEEL MODERNO
+        interfaz.EstiloModerno.inicializarLookAndFeel();
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                VentanaEmpresaPrincipal miInicio = new VentanaEmpresaPrincipal();
+                miInicio.setLocationRelativeTo(null);
+                miInicio.setVisible(true);
+            }
+        });
     }
     //CLASE EMPRESA
     

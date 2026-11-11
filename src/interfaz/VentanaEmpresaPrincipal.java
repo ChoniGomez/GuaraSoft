@@ -41,7 +41,8 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
         this.miControladoraInterfaz = new ControladoraInterfaz();
         this.jDesktopPane.setBorder(new ImagenFondo());
         this.setExtendedState(VentanaEmpresaPrincipal.MAXIMIZED_BOTH);
-        this.setTitle("GuaraSoft");
+        this.setTitle("GuaraSoft - Sistema de Gestión Empresarial");
+        configurarInterfazModerna();
     }
 
     /**
@@ -594,6 +595,64 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null,"LA VENTANA DE TECNOLOGIA YA ESTA ABIERTA.", "ADVERTENCIA", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jMenuItem15ActionPerformed
+
+    private void configurarInterfazModerna() {
+        java.awt.Color colorIcono = new java.awt.Color(100, 181, 246);
+
+        // Iconos de menús principales
+        jMenu1.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.FOLDER, 14, colorIcono));
+        jMenuABM.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.DATABASE, 14, colorIcono));
+        jMenu2.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.BUILDING, 14, colorIcono));
+        jMenu3.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.FILE_INVOICE_DOLLAR, 14, colorIcono));
+        jMenu4.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USERS, 14, colorIcono));
+        jMenu5.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CALENDAR_ALT, 14, colorIcono));
+        jMenu6.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.PROJECT_DIAGRAM, 14, colorIcono));
+
+        // Iconos de submenús ABM
+        jMenuABMArticulo.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.BOX, 14, colorIcono));
+        jMenuEmpleado.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER_TIE, 14, colorIcono));
+        jMenuItemEquipo.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.LAPTOP, 14, colorIcono));
+        jMenuABMCliente.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER, 14, colorIcono));
+        jMenuFacturaCompra.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SHOPPING_CART, 14, colorIcono));
+        jMenuFacturaVenta.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CASH_REGISTER, 14, colorIcono));
+        jMenuProveedor.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.TRUCK, 14, colorIcono));
+        jMenuItemSucursal.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.STORE, 14, colorIcono));
+        jMenuTique.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.RECEIPT, 14, colorIcono));
+        jMenuItemTurno.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CLOCK, 14, colorIcono));
+        jMenuSalir.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SIGN_OUT_ALT, 14, new java.awt.Color(231, 76, 60)));
+
+        // Iconos en otros menús
+        jMenuItem8.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.WALLET, 14, colorIcono));
+        jMenuItem15.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_HOLDING_USD, 14, colorIcono));
+        jMenuItem16.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CODE, 14, colorIcono));
+
+        // Botón en la derecha de la barra de menú para cambiar entre Modo Oscuro / Claro
+        jMenuBar1.add(javax.swing.Box.createHorizontalGlue());
+        final javax.swing.JButton btnTema = new javax.swing.JButton("Modo Claro / Oscuro");
+        btnTema.setFocusable(false);
+        btnTema.putClientProperty("JButton.buttonType", "toolBarButton");
+        btnTema.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.ADJUST, 14, colorIcono));
+        btnTema.addActionListener(new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                EstiloModerno.alternarTema(VentanaEmpresaPrincipal.this);
+            }
+        });
+        jMenuBar1.add(btnTema);
+
+        // Estilizar automáticamente cualquier JInternalFrame que se agregue al DesktopPane
+        jDesktopPane.addContainerListener(new java.awt.event.ContainerAdapter() {
+            @Override
+            public void componentAdded(java.awt.event.ContainerEvent e) {
+                if (e.getChild() instanceof java.awt.Container) {
+                    EstiloModerno.aplicarEstiloVentana((java.awt.Container) e.getChild());
+                    if (e.getChild() instanceof javax.swing.JInternalFrame) {
+                        ((javax.swing.JInternalFrame) e.getChild()).pack();
+                    }
+                }
+            }
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane;

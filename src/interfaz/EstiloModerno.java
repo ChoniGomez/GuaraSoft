@@ -102,6 +102,17 @@ public class EstiloModerno {
             frame.setMaximizable(true);
             frame.setResizable(true);
             frame.putClientProperty("JInternalFrame.isPalette", false);
+
+            // Icono personalizado para reemplazar la taza de café por defecto de Java
+            try {
+                java.net.URL urlIcono = EstiloModerno.class.getResource("/iconos/monitor.png");
+                if (urlIcono != null) {
+                    frame.setFrameIcon(new javax.swing.ImageIcon(urlIcono));
+                }
+            } catch (Exception ex) {
+                // Silencioso si no carga
+            }
+
             aplicarEstiloComponentes(frame.getContentPane());
             return;
         }

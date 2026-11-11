@@ -657,6 +657,46 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
         jMenuSeguridad.add(jMenuItemUsuarios);
         jMenuBar1.add(jMenuSeguridad);
 
+        // =========================================================================
+        // REORGANIZACIÓN COMPACTA DE LA BARRA DE MENÚ (EVITAR DESBORDAMIENTO)
+        // Agrupar 'Cliente', 'Gestión de Turnos' y 'Gestión de Proyectos' en "Módulos / Operaciones"
+        // =========================================================================
+        jMenuBar1.remove(jMenu4); // Cliente
+        jMenuBar1.remove(jMenu5); // Gestión de Turnos
+        jMenuBar1.remove(jMenu6); // Gestión de Proyectos
+        jMenuBar1.remove(jMenuSeguridad); // Lo reordenamos al final
+
+        javax.swing.JMenu jMenuOperaciones = new javax.swing.JMenu("Operaciones");
+        jMenuOperaciones.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CUBES, 14, colorIcono));
+        jMenuOperaciones.add(jMenu4); // Menú desplegable Cliente
+        jMenuOperaciones.add(jMenu5); // Menú desplegable Gestión de Turnos
+        jMenuOperaciones.add(jMenu6); // Menú desplegable Gestión de Proyectos
+
+        jMenuBar1.add(jMenuOperaciones);
+        jMenuBar1.add(jMenuSeguridad);
+
+        // Iconos de submenús en Módulos de Operaciones (jMenu4, jMenu5, jMenu6)
+        jMenuItem7.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER, 14, colorIcono));
+        jMenuItem9.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.LAPTOP, 14, colorIcono));
+
+        jMenuItem10.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SHIPPING_FAST, 14, colorIcono));
+        jMenuItem11.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SIGN_IN_ALT, 14, colorIcono));
+        jMenuItem18.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SIGN_OUT_ALT, 14, colorIcono));
+        jMenuItem12.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.TRUCK, 14, colorIcono));
+        jMenuItem13.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CLIPBOARD_LIST, 14, colorIcono));
+
+        jMenuItem14.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.PROJECT_DIAGRAM, 14, colorIcono));
+        jMenuItem17.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.TASKS, 14, colorIcono));
+
+        // Submenús en Empresa (jMenu2) y Facturación (jMenu3)
+        jMenuItem1.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.USER_TIE, 14, colorIcono));
+        jMenuItem2.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.BOX, 14, colorIcono));
+        jMenuItem3.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.TRUCK_LOADING, 14, colorIcono));
+        jMenuItem4.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.STORE, 14, colorIcono));
+
+        jMenuItem5.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SHOPPING_BAG, 14, colorIcono));
+        jMenuItem6.setIcon(org.kordamp.ikonli.swing.FontIcon.of(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CASH_REGISTER, 14, colorIcono));
+
         // Aplicar control de permisos según el usuario logueado
         logicaDeNegocio.Usuario usuarioActual = logicaDeNegocio.SesionUsuario.getInstancia().getUsuarioActual();
         if (usuarioActual != null) {
@@ -667,6 +707,12 @@ public class VentanaEmpresaPrincipal extends javax.swing.JFrame {
             jMenu5.setVisible(usuarioActual.isPermisoTurnos());
             jMenu6.setVisible(usuarioActual.isPermisoProyectos());
             jMenuSeguridad.setVisible(usuarioActual.isPermisoUsuarios());
+
+            // Mostrar u ocultar el menú agrupado Operaciones si tiene al menos un permiso habilitado
+            boolean tieneOperaciones = usuarioActual.isPermisoClientes()
+                    || usuarioActual.isPermisoTurnos()
+                    || usuarioActual.isPermisoProyectos();
+            jMenuOperaciones.setVisible(tieneOperaciones);
 
             // Si tiene sucursal específica asignada (no global), ocultar ABM de Sucursales
             if (!usuarioActual.esSuperusuario() && usuarioActual.getSucursalAsignada() != null) {
